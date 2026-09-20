@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, CheckCircle, ShieldAlert, Activity, Package, BatteryWarning, Scan, Crosshair, X, FileText, Camera, Play } from 'lucide-react';
 
-// ใช้รูปล็อกตายตัวที่เป็นกระเป๋าเดินทาง/เป้ (ใส่ฟิลเตอร์ X-Ray ในโค้ดด้านล่างให้สมจริง)
+// ใช้รูปลิงก์ X-Ray ของจริงจาก Wikimedia (ตามเวอร์ชันที่ถูกต้อง)
 const cargoQueue = [
   {
     id: 'BAG-88320C',
@@ -14,13 +14,13 @@ const cargoQueue = [
     status: 'Critical',
     density: 'HIGH (Metallic)',
     atomicZ: '25 - 29',
-    box: { top: '35%', left: '40%', width: '120px', height: '80px' }
+    box: { top: '35%', left: '42%', width: '120px', height: '90px' }
   },
   {
     id: 'BAG-10492X',
     flight: 'TG-930',
     bagTag: 'BKK-10492X',
-    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80',
+    image: 'https://thumbs.dreamstime.com/b/x-ray-image-showing-contents-packed-suitcase-365652673.jpg',
     hasThreat: false,
     type: 'Standard Luggage (Organic)',
     confidence: '99.1%',
@@ -40,7 +40,7 @@ const cargoQueue = [
     status: 'Critical',
     density: 'HIGH (Dense Metal)',
     atomicZ: '26 - 30',
-    box: { top: '45%', left: '30%', width: '130px', height: '90px' }
+    box: { top: '60%', left: '20%', width: '130px', height: '80px' }
   }
 ];
 
@@ -91,39 +91,44 @@ const CargoDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 p-6 font-sans relative">
-      <header className="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
+    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-6 font-sans relative overflow-x-hidden">
+      
+      {/* Header Responsive */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 md:mb-6 pb-4 border-b border-slate-800">
         <div className="flex items-center gap-3">
-          <ShieldAlert className="w-8 h-8 text-red-500" />
-          <h1 className="text-2xl font-bold tracking-wider text-white">SKYGUARD <span className="text-red-500">AI VISION</span></h1>
+          <ShieldAlert className="w-7 h-7 md:w-8 md:h-8 text-red-500" />
+          <h1 className="text-xl md:text-2xl font-bold tracking-wider text-white">SKYGUARD <span className="text-red-500">AI VISION</span></h1>
         </div>
-        <div className="flex gap-4">
-          <div className="flex items-center gap-2 bg-slate-900 px-4 py-2 rounded-lg border border-slate-800 shadow-inner">
-            <Package className="w-5 h-5 text-slate-400" />
-            <span className="text-sm">Scanned Today: <span className="text-white font-bold">{scannedCount}</span></span>
+        <div className="flex flex-wrap w-full md:w-auto gap-2 md:gap-4">
+          <div className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-slate-900 px-3 md:px-4 py-2 rounded-lg border border-slate-800 shadow-inner">
+            <Package className="w-4 h-4 md:w-5 md:h-5 text-slate-400" />
+            <span className="text-xs md:text-sm whitespace-nowrap">Scanned: <span className="text-white font-bold">{scannedCount}</span></span>
           </div>
-          <div className="flex items-center gap-2 bg-green-950 px-4 py-2 rounded-lg border border-green-900">
-            <Activity className="w-5 h-5 text-green-500 animate-pulse" />
-            <span className="text-sm text-green-500 font-bold tracking-wide">SYSTEM ONLINE</span>
+          <div className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-green-950 px-3 md:px-4 py-2 rounded-lg border border-green-900">
+            <Activity className="w-4 h-4 md:w-5 md:h-5 text-green-500 animate-pulse" />
+            <span className="text-xs md:text-sm text-green-500 font-bold tracking-wide whitespace-nowrap">SYSTEM ONLINE</span>
           </div>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* โครงสร้าง Grid: 1 คอลัมน์บนมือถือ, 3 คอลัมน์บนจอคอม */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        
+        {/* หน้าจอ X-Ray */}
         <div className="lg:col-span-2 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex flex-col shadow-2xl">
-          <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-800/80">
-            <div className="flex items-center gap-2">
-              <Scan className="w-5 h-5 text-blue-400" />
-              <h2 className="font-semibold text-lg text-slate-200">
-                Live X-Ray Feed (Belt A)
+          <div className="p-3 md:p-4 border-b border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-800/80">
+            <div className="flex flex-wrap items-center gap-2">
+              <Scan className="w-5 h-5 text-blue-400 hidden sm:block" />
+              <h2 className="font-semibold text-base md:text-lg text-slate-200">
+                Live X-Ray (Belt A)
               </h2>
-              <span className="bg-slate-800 text-blue-400 text-xs px-2 py-0.5 rounded border border-slate-700 font-mono ml-2">
+              <span className="bg-slate-800 text-blue-400 text-[10px] md:text-xs px-2 py-0.5 rounded border border-slate-700 font-mono">
                 Item: {currentItem.id}
               </span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-400 font-mono">FRAME RATIO: 16:9 | DUAL-ENERGY</span>
-              <span className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wider ${
+            <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto justify-between sm:justify-end">
+              <span className="text-[10px] md:text-xs text-slate-400 font-mono hidden sm:block">RATIO 16:9 | DUAL-ENERGY</span>
+              <span className={`px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold tracking-wider text-center w-full sm:w-auto ${
                 scanStage === 'scanning' 
                   ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50' 
                   : currentItem.hasThreat 
@@ -135,17 +140,17 @@ const CargoDashboard = () => {
             </div>
           </div>
           
-          <div className="relative flex-1 bg-black min-h-[450px] flex items-center justify-center overflow-hidden">
+          <div className="relative flex-1 bg-black min-h-[300px] md:min-h-[450px] flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
             
-            <div className="relative w-full max-w-xl flex justify-center items-center p-4">
-              <div className="relative w-full h-[320px] bg-slate-900 rounded-lg overflow-hidden border border-slate-700 flex items-center justify-center">
+            <div className="relative w-full max-w-xl flex justify-center items-center p-2 md:p-4">
+              <div className="relative w-full h-[250px] sm:h-[320px] bg-slate-900 rounded-lg overflow-hidden border border-slate-700 flex items-center justify-center">
                 
-                {/* ดึงรูปกระเป๋าเดินทาง แล้วใช้ CSS ย้อมสีภาพให้เหมือนเครื่อง X-Ray สแกนทะลุ */}
+                {/* ใช้ object-contain เพื่อให้รูปสมส่วนเหมือนเดิม */}
                 <img 
                   src={currentItem.image} 
-                  alt="X-Ray Scan" 
-                  className="w-full h-full object-cover opacity-85 filter grayscale invert contrast-[1.5] sepia-[.2] hue-rotate-[190deg] transition-all duration-500"
+                  alt="Real X-Ray Scan" 
+                  className="w-full h-full object-contain opacity-85 filter contrast-[1.4] brightness-90 transition-all duration-500"
                 />
                 
                 {scanStage === 'scanning' && (
@@ -162,10 +167,10 @@ const CargoDashboard = () => {
                     }}
                     className="absolute border-[2px] border-red-500 bg-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.6)] z-20 transition-all duration-300"
                   >
-                    <Crosshair className="absolute -top-3 -left-3 w-6 h-6 text-red-500 opacity-90" />
-                    <Crosshair className="absolute -bottom-3 -right-3 w-6 h-6 text-red-500 opacity-90" />
-                    <div className="bg-red-500 text-white text-[11px] font-bold px-2 py-1 whitespace-nowrap absolute -top-7 left-[-2px] flex items-center gap-1 shadow-lg">
-                      <AlertTriangle className="w-3 h-3" />
+                    <Crosshair className="absolute -top-3 -left-3 w-4 h-4 md:w-6 md:h-6 text-red-500 opacity-90" />
+                    <Crosshair className="absolute -bottom-3 -right-3 w-4 h-4 md:w-6 md:h-6 text-red-500 opacity-90" />
+                    <div className="bg-red-500 text-white text-[9px] md:text-[11px] font-bold px-1.5 py-1 whitespace-nowrap absolute -top-6 md:-top-7 left-[-2px] flex items-center gap-1 shadow-lg">
+                      <AlertTriangle className="w-2 h-2 md:w-3 md:h-3" />
                       {currentItem.type} | {currentItem.confidence}
                     </div>
                   </div>
@@ -175,24 +180,25 @@ const CargoDashboard = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-6">
-          <div className={`p-6 rounded-xl border shadow-lg transition-all duration-500 ${
+        {/* ส่วนแสดงผลลัพธ์และประวัติ */}
+        <div className="flex flex-col gap-4 md:gap-6">
+          <div className={`p-4 md:p-6 rounded-xl border shadow-lg transition-all duration-500 ${
             scanStage === 'result' && currentItem.hasThreat 
               ? 'bg-red-950/30 border-red-800/50' 
               : scanStage === 'result' && !currentItem.hasThreat
                 ? 'bg-green-950/30 border-green-800/50'
                 : 'bg-slate-900 border-slate-800'
           }`}>
-            <div className="flex items-start gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4">
               {scanStage === 'result' && currentItem.hasThreat ? (
-                <AlertTriangle className="w-12 h-12 text-red-500 shrink-0 animate-pulse" />
+                <AlertTriangle className="w-10 h-10 md:w-12 md:h-12 text-red-500 shrink-0 animate-pulse" />
               ) : scanStage === 'result' && !currentItem.hasThreat ? (
-                <CheckCircle className="w-12 h-12 text-green-500 shrink-0" />
+                <CheckCircle className="w-10 h-10 md:w-12 md:h-12 text-green-500 shrink-0" />
               ) : (
-                <Scan className="w-12 h-12 text-blue-400 shrink-0 animate-spin" />
+                <Scan className="w-10 h-10 md:w-12 md:h-12 text-blue-400 shrink-0 animate-spin" />
               )}
               <div>
-                <h3 className={`text-xl font-bold mb-1 tracking-wide ${
+                <h3 className={`text-lg md:text-xl font-bold mb-1 tracking-wide ${
                   scanStage === 'result' && currentItem.hasThreat 
                     ? 'text-red-400' 
                     : scanStage === 'result' && !currentItem.hasThreat
@@ -205,49 +211,49 @@ const CargoDashboard = () => {
                       ? 'CRITICAL THREAT DETECTED' 
                       : 'ALL CLEAR - PASSED'}
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
                   {scanStage === 'scanning'
-                    ? 'Analyzing dual-energy density profile and geometry...'
+                    ? 'Analyzing dual-energy density profile...'
                     : currentItem.hasThreat 
-                      ? 'Hazardous material detected. Cargo belt auto-paused. Awaiting manual action or override.' 
-                      : 'No restricted items detected. Belt operating normally. Proceeding to next cargo...'}
+                      ? 'Hazardous material detected. Cargo belt auto-paused.' 
+                      : 'No restricted items detected. Belt operating normally.'}
                 </p>
               </div>
             </div>
             
             {scanStage === 'result' && currentItem.hasThreat && (
-              <div className="mt-4 pt-4 border-t border-red-900/50 flex flex-col gap-2">
+              <div className="mt-4 pt-4 border-t border-red-900/50">
                 <button 
                   onClick={handleNextItem}
-                  className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-lg"
+                  className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-lg text-sm md:text-base"
                 >
                   <Play className="w-4 h-4 fill-current" />
-                  Override & Scan Next Cargo
+                  Override & Scan Next
                 </button>
               </div>
             )}
           </div>
 
-          <div className="bg-slate-900 rounded-xl border border-slate-800 flex-1 flex flex-col overflow-hidden shadow-lg">
-            <div className="p-4 border-b border-slate-800 bg-slate-800/40 flex justify-between items-center">
-              <h3 className="font-semibold text-slate-200">Detection Logs</h3>
-              <span className="text-xs text-slate-400 font-mono">Last 24h</span>
+          <div className="bg-slate-900 rounded-xl border border-slate-800 flex-1 flex flex-col overflow-hidden shadow-lg h-[300px] lg:h-auto">
+            <div className="p-3 md:p-4 border-b border-slate-800 bg-slate-800/40 flex justify-between items-center">
+              <h3 className="font-semibold text-sm md:text-base text-slate-200">Detection Logs</h3>
+              <span className="text-[10px] md:text-xs text-slate-400 font-mono">Last 24h</span>
             </div>
-            <div className="p-4 flex flex-col gap-3 overflow-y-auto">
+            <div className="p-3 md:p-4 flex flex-col gap-2 md:gap-3 overflow-y-auto">
               {alerts.map((alert) => (
-                <div key={alert.id} className="bg-slate-950 border border-slate-800 p-3 rounded-lg flex items-center justify-between hover:border-slate-700 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${alert.status === 'Critical' ? 'bg-red-500/10 text-red-500' : 'bg-yellow-500/10 text-yellow-500'}`}>
-                      <BatteryWarning className="w-5 h-5" />
+                <div key={alert.id} className="bg-slate-950 border border-slate-800 p-2 md:p-3 rounded-lg flex items-center justify-between hover:border-slate-700 transition-colors">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className={`p-1.5 md:p-2 rounded-lg shrink-0 ${alert.status === 'Critical' ? 'bg-red-500/10 text-red-500' : 'bg-yellow-500/10 text-yellow-500'}`}>
+                      <BatteryWarning className="w-4 h-4 md:w-5 md:h-5" />
                     </div>
-                    <div>
-                      <p className="text-sm font-bold text-slate-200">{alert.type}</p>
-                      <p className="text-xs text-slate-500 font-mono mt-0.5">{alert.time} | Conf: {alert.confidence}</p>
+                    <div className="min-w-0">
+                      <p className="text-xs md:text-sm font-bold text-slate-200 truncate">{alert.type}</p>
+                      <p className="text-[10px] md:text-xs text-slate-500 font-mono mt-0.5">{alert.time} | Conf: {alert.confidence}</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => setSelectedAlert(alert)}
-                    className="text-xs bg-slate-800 hover:bg-slate-700 text-blue-400 hover:text-blue-300 px-3 py-1.5 rounded transition-colors font-bold border border-slate-700 hover:border-blue-500/50 cursor-pointer"
+                    className="text-[10px] md:text-xs bg-slate-800 hover:bg-slate-700 text-blue-400 px-2 md:px-3 py-1 md:py-1.5 rounded transition-colors font-bold border border-slate-700 shrink-0 ml-2"
                   >
                     REVIEW
                   </button>
@@ -258,67 +264,68 @@ const CargoDashboard = () => {
         </div>
       </div>
 
+      {/* Incident Report Modal */}
       {selectedAlert && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-[fadeIn_0.2s_ease-out]">
-            <div className="bg-slate-800 p-4 border-b border-slate-700 flex justify-between items-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
+            <div className="bg-slate-800 p-3 md:p-4 border-b border-slate-700 flex justify-between items-center sticky top-0 z-10">
               <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-blue-400" />
-                <h2 className="text-lg font-bold text-slate-200">Incident Report: #{selectedAlert.id.toString().slice(-6)}</h2>
+                <FileText className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
+                <h2 className="text-base md:text-lg font-bold text-slate-200">Incident Report: #{selectedAlert.id.toString().slice(-6)}</h2>
               </div>
               <button 
                 onClick={() => setSelectedAlert(null)}
-                className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-700 transition-colors cursor-pointer"
+                className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-700 transition-colors"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
             </div>
             
-            <div className="p-6">
-              <div className="flex gap-6 mb-6">
-                <div className="w-1/3 bg-black rounded-lg border border-slate-700 p-2 flex flex-col items-center justify-center min-h-[120px]">
-                  <Camera className="w-8 h-8 text-slate-600 mb-2" />
-                  <span className="text-xs text-slate-500 font-mono">Snapshot Captured</span>
+            <div className="p-4 md:p-6">
+              <div className="flex flex-col sm:flex-row gap-4 md:gap-6 mb-6">
+                <div className="w-full sm:w-1/3 bg-black rounded-lg border border-slate-700 p-2 flex flex-col items-center justify-center min-h-[100px] md:min-h-[120px]">
+                  <Camera className="w-6 h-6 md:w-8 md:h-8 text-slate-600 mb-2" />
+                  <span className="text-[10px] md:text-xs text-slate-500 font-mono text-center">Snapshot Captured</span>
                 </div>
-                <div className="w-2/3 grid grid-cols-2 gap-4 text-sm">
+                <div className="w-full sm:w-2/3 grid grid-cols-2 gap-3 md:gap-4 text-xs md:text-sm">
                   <div>
-                    <p className="text-slate-500 mb-1">Detected Threat</p>
-                    <p className="font-bold text-red-400">{selectedAlert.type}</p>
+                    <p className="text-slate-500 mb-0.5 md:mb-1">Detected Threat</p>
+                    <p className="font-bold text-red-400 truncate">{selectedAlert.type}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500 mb-1">Confidence</p>
+                    <p className="text-slate-500 mb-0.5 md:mb-1">Confidence</p>
                     <p className="font-bold text-white">{selectedAlert.confidence}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500 mb-1">Associated Flight</p>
+                    <p className="text-slate-500 mb-0.5 md:mb-1">Associated Flight</p>
                     <p className="font-mono font-bold text-blue-400">{selectedAlert.flight}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500 mb-1">Bag Tag Number</p>
+                    <p className="text-slate-500 mb-0.5 md:mb-1">Bag Tag Number</p>
                     <p className="font-mono font-bold text-yellow-400">{selectedAlert.bagTag}</p>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-red-950/20 border border-red-900/30 p-4 rounded-lg">
-                <h4 className="text-red-400 font-bold mb-2 flex items-center gap-2">
+              <div className="bg-red-950/20 border border-red-900/30 p-3 md:p-4 rounded-lg">
+                <h4 className="text-red-400 text-sm md:text-base font-bold mb-2 flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4" /> Recommended Action Protocol
                 </h4>
-                <p className="text-sm text-slate-300">
+                <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
                   Item exhibits characteristics of a high-capacity lithium-ion battery. This violates IATA Dangerous Goods regulations for checked baggage. 
-                  <span className="block mt-2 font-bold text-white">Action: Initiate manual inspection by security personnel (EOD) before loading onto flight {selectedAlert.flight}.</span>
+                  <span className="block mt-2 font-bold text-white">Action: Initiate manual inspection by security personnel (EOD) before loading.</span>
                 </p>
               </div>
             </div>
             
-            <div className="bg-slate-800/50 p-4 border-t border-slate-700 flex justify-end gap-3">
+            <div className="bg-slate-800/50 p-3 md:p-4 border-t border-slate-700 flex flex-col-reverse sm:flex-row justify-end gap-2 md:gap-3 sticky bottom-0">
               <button 
                 onClick={() => setSelectedAlert(null)}
-                className="px-4 py-2 rounded bg-slate-700 text-white text-sm hover:bg-slate-600 transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2 rounded bg-slate-700 text-white text-xs md:text-sm hover:bg-slate-600 transition-colors"
               >
                 Close Report
               </button>
-              <button className="px-4 py-2 rounded bg-red-600 text-white text-sm font-bold hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20 cursor-pointer">
+              <button className="w-full sm:w-auto px-4 py-2 rounded bg-red-600 text-white text-xs md:text-sm font-bold hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20">
                 Dispatch Security Team
               </button>
             </div>
