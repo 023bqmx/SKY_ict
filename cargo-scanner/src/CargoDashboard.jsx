@@ -1,45 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, CheckCircle, ShieldAlert, Activity, Package, BatteryWarning, Scan, Crosshair, X, FileText, Camera } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ShieldAlert, Activity, Package, BatteryWarning, Scan, Crosshair, X, FileText, Camera, Play } from 'lucide-react';
+
+// ใช้รูปล็อกตายตัวที่เป็นกระเป๋าเดินทาง/เป้ (ใส่ฟิลเตอร์ X-Ray ในโค้ดด้านล่างให้สมจริง)
+const cargoQueue = [
+  {
+    id: 'BAG-88320C',
+    flight: 'EK-372',
+    bagTag: 'DXB-88320C',
+    image: 'https://www.airport-technology.com/wp-content/uploads/sites/14/2022/05/GettyImages_1255460753resize1.2048_0_1.jpg',
+    hasThreat: true,
+    type: 'High-Capacity Power Bank (Li-ion)',
+    confidence: '97.5%',
+    status: 'Critical',
+    density: 'HIGH (Metallic)',
+    atomicZ: '25 - 29',
+    box: { top: '35%', left: '40%', width: '120px', height: '80px' }
+  },
+  {
+    id: 'BAG-10492X',
+    flight: 'TG-930',
+    bagTag: 'BKK-10492X',
+    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80',
+    hasThreat: false,
+    type: 'Standard Luggage (Organic)',
+    confidence: '99.1%',
+    status: 'Clear',
+    density: 'NORMAL (Textile/Organic)',
+    atomicZ: '6 - 8',
+    box: null
+  },
+  {
+    id: 'BAG-55219A',
+    flight: 'SQ-711',
+    bagTag: 'SIN-55219A',
+    image: 'https://media.istockphoto.com/id/183249716/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B9%80%E0%B8%AD%E0%B9%87%E0%B8%81%E0%B8%8B%E0%B9%8C%E0%B9%80%E0%B8%A3%E0%B8%A2%E0%B9%8C%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%9B%E0%B9%8B%E0%B8%B2%E0%B9%80%E0%B8%94%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%B2%E0%B8%87.jpg?s=612x612&w=0&k=20&c=x6OqP_hFiMVHma7IefjEyRFBgcE2CcBoMZMYxJLm4XE=',
+    hasThreat: true,
+    type: 'Lithium Battery Pack',
+    confidence: '94.2%',
+    status: 'Critical',
+    density: 'HIGH (Dense Metal)',
+    atomicZ: '26 - 30',
+    box: { top: '45%', left: '30%', width: '130px', height: '90px' }
+  }
+];
 
 const CargoDashboard = () => {
-  const [isScanning, setIsScanning] = useState(false);
-  const [threatDetected, setThreatDetected] = useState(false);
-  const [scannedCount, setScannedCount] = useState(1252);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [scanStage, setScanStage] = useState('scanning');
+  const [scannedCount, setScannedCount] = useState(1265);
   const [selectedAlert, setSelectedAlert] = useState(null);
   
   const [alerts, setAlerts] = useState([
     { id: 1, time: '13:30:45', type: 'High-Density Organic', confidence: '82%', status: 'Warning', flight: 'TG-930', bagTag: 'BKK-10492X' }
   ]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsScanning(true);
-      setThreatDetected(false);
-      
-      setTimeout(() => {
-        setIsScanning(false);
-        setThreatDetected(true);
-        setScannedCount(prev => prev + 1);
-        
-        const newAlert = {
-          id: Date.now(),
-          time: new Date().toLocaleTimeString('th-TH', { hour12: false }),
-          type: 'High-Capacity Power Bank (Li-ion)',
-          confidence: '97.5%',
-          status: 'Critical',
-          flight: 'EK-372',
-          bagTag: 'DXB-88320C'
-        };
-        setAlerts(prev => [newAlert, ...prev].slice(0, 4)); 
-      }, 2500);
-    }, 7000); 
+  const currentItem = cargoQueue[currentIndex];
 
-    return () => clearInterval(interval);
-  }, []);
+  useEffect(() => {
+    let timer;
+    if (scanStage === 'scanning') {
+      timer = setTimeout(() => {
+        setScanStage('result');
+        setScannedCount(prev => prev + 1);
+
+        if (currentItem.hasThreat) {
+          const newAlert = {
+            id: Date.now(),
+            time: new Date().toLocaleTimeString('th-TH', { hour12: false }),
+            type: currentItem.type,
+            confidence: currentItem.confidence,
+            status: currentItem.status,
+            flight: currentItem.flight,
+            bagTag: currentItem.bagTag
+          };
+          setAlerts(prev => [newAlert, ...prev].slice(0, 5));
+        }
+      }, 2500);
+    } else if (scanStage === 'result' && !currentItem.hasThreat) {
+      timer = setTimeout(() => {
+        handleNextItem();
+      }, 2000);
+    }
+
+    return () => clearTimeout(timer);
+  }, [scanStage, currentIndex]);
+
+  const handleNextItem = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % cargoQueue.length);
+    setScanStage('scanning');
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-6 font-sans relative">
-      {/* Header */}
       <header className="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
         <div className="flex items-center gap-3">
           <ShieldAlert className="w-8 h-8 text-red-500" />
@@ -57,20 +109,28 @@ const CargoDashboard = () => {
         </div>
       </header>
 
-      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Left Column: X-Ray Scanner Feed */}
         <div className="lg:col-span-2 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex flex-col shadow-2xl">
           <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-800/80">
-            <h2 className="font-semibold text-lg flex items-center gap-2 text-slate-200">
+            <div className="flex items-center gap-2">
               <Scan className="w-5 h-5 text-blue-400" />
-              Live X-Ray Feed (Terminal 1 - Cargo Belt A)
-            </h2>
+              <h2 className="font-semibold text-lg text-slate-200">
+                Live X-Ray Feed (Belt A)
+              </h2>
+              <span className="bg-slate-800 text-blue-400 text-xs px-2 py-0.5 rounded border border-slate-700 font-mono ml-2">
+                Item: {currentItem.id}
+              </span>
+            </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-slate-400 font-mono">FRAME RATIO: 16:9 | DUAL-ENERGY</span>
-              <span className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wider ${isScanning ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50' : threatDetected ? 'bg-red-500/20 text-red-400 border border-red-500/50 animate-pulse' : 'bg-green-500/20 text-green-400 border border-green-500/50'}`}>
-                {isScanning ? 'ANALYZING...' : threatDetected ? 'THREAT DETECTED' : 'CLEAR'}
+              <span className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wider ${
+                scanStage === 'scanning' 
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50' 
+                  : currentItem.hasThreat 
+                    ? 'bg-red-500/20 text-red-400 border border-red-500/50 animate-pulse' 
+                    : 'bg-green-500/20 text-green-400 border border-green-500/50'
+              }`}>
+                {scanStage === 'scanning' ? 'ANALYZING...' : currentItem.hasThreat ? 'THREAT DETECTED' : 'PASSED (CLEAR)'}
               </span>
             </div>
           </div>
@@ -79,25 +139,34 @@ const CargoDashboard = () => {
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
             
             <div className="relative w-full max-w-xl flex justify-center items-center p-4">
-              {/* เปลี่ยนมาใช้ภาพจำลอง X-Ray กระเป๋าแบบปลอดภัยหายห่วง */}
               <div className="relative w-full h-[320px] bg-slate-900 rounded-lg overflow-hidden border border-slate-700 flex items-center justify-center">
+                
+                {/* ดึงรูปกระเป๋าเดินทาง แล้วใช้ CSS ย้อมสีภาพให้เหมือนเครื่อง X-Ray สแกนทะลุ */}
                 <img 
-                  src="https://images.unsplash.com/photo-1581557991964-125469da3b8a?q=80&w=800&auto=format&fit=crop" 
-                  alt="Luggage X-Ray" 
-                  className="w-full h-full object-cover opacity-75 filter grayscale invert contrast-[1.6] brightness-90"
+                  src={currentItem.image} 
+                  alt="X-Ray Scan" 
+                  className="w-full h-full object-cover opacity-85 filter grayscale invert contrast-[1.5] sepia-[.2] hue-rotate-[190deg] transition-all duration-500"
                 />
                 
-                {isScanning && (
+                {scanStage === 'scanning' && (
                   <div className="absolute top-0 left-0 w-full h-[3px] bg-cyan-400 shadow-[0_0_20px_rgba(34,211,238,1)] animate-[scan_2.5s_ease-in-out_infinite] z-10" />
                 )}
 
-                {threatDetected && (
-                  <div className="absolute top-[35%] left-[30%] w-[130px] h-[80px] border-[2px] border-red-500 bg-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.6)] z-20 transition-all duration-300">
+                {scanStage === 'result' && currentItem.hasThreat && currentItem.box && (
+                  <div 
+                    style={{
+                      top: currentItem.box.top,
+                      left: currentItem.box.left,
+                      width: currentItem.box.width,
+                      height: currentItem.box.height
+                    }}
+                    className="absolute border-[2px] border-red-500 bg-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.6)] z-20 transition-all duration-300"
+                  >
                     <Crosshair className="absolute -top-3 -left-3 w-6 h-6 text-red-500 opacity-90" />
                     <Crosshair className="absolute -bottom-3 -right-3 w-6 h-6 text-red-500 opacity-90" />
                     <div className="bg-red-500 text-white text-[11px] font-bold px-2 py-1 whitespace-nowrap absolute -top-7 left-[-2px] flex items-center gap-1 shadow-lg">
                       <AlertTriangle className="w-3 h-3" />
-                      Li-ion Battery | 97.5%
+                      {currentItem.type} | {currentItem.confidence}
                     </div>
                   </div>
                 )}
@@ -106,37 +175,55 @@ const CargoDashboard = () => {
           </div>
         </div>
 
-        {/* Right Column: Alerts & Info */}
         <div className="flex flex-col gap-6">
-          <div className={`p-6 rounded-xl border shadow-lg transition-all duration-500 ${threatDetected ? 'bg-red-950/30 border-red-800/50' : 'bg-slate-900 border-slate-800'}`}>
+          <div className={`p-6 rounded-xl border shadow-lg transition-all duration-500 ${
+            scanStage === 'result' && currentItem.hasThreat 
+              ? 'bg-red-950/30 border-red-800/50' 
+              : scanStage === 'result' && !currentItem.hasThreat
+                ? 'bg-green-950/30 border-green-800/50'
+                : 'bg-slate-900 border-slate-800'
+          }`}>
             <div className="flex items-start gap-4">
-              {threatDetected ? (
+              {scanStage === 'result' && currentItem.hasThreat ? (
                 <AlertTriangle className="w-12 h-12 text-red-500 shrink-0 animate-pulse" />
-              ) : (
+              ) : scanStage === 'result' && !currentItem.hasThreat ? (
                 <CheckCircle className="w-12 h-12 text-green-500 shrink-0" />
+              ) : (
+                <Scan className="w-12 h-12 text-blue-400 shrink-0 animate-spin" />
               )}
               <div>
-                <h3 className={`text-xl font-bold mb-1 tracking-wide ${threatDetected ? 'text-red-400' : 'text-green-400'}`}>
-                  {threatDetected ? 'CRITICAL THREAT' : 'ALL CLEAR'}
+                <h3 className={`text-xl font-bold mb-1 tracking-wide ${
+                  scanStage === 'result' && currentItem.hasThreat 
+                    ? 'text-red-400' 
+                    : scanStage === 'result' && !currentItem.hasThreat
+                      ? 'text-green-400'
+                      : 'text-blue-400'
+                }`}>
+                  {scanStage === 'scanning' 
+                    ? 'SCANNING CARGO...' 
+                    : currentItem.hasThreat 
+                      ? 'CRITICAL THREAT DETECTED' 
+                      : 'ALL CLEAR - PASSED'}
                 </h3>
                 <p className="text-sm text-slate-400 leading-relaxed">
-                  {threatDetected 
-                    ? 'Hazardous material (Lithium-ion) detected. Cargo belt auto-paused. Awaiting manual override by security protocol.' 
-                    : 'No restricted items detected in current scan. Belt operating normally.'}
+                  {scanStage === 'scanning'
+                    ? 'Analyzing dual-energy density profile and geometry...'
+                    : currentItem.hasThreat 
+                      ? 'Hazardous material detected. Cargo belt auto-paused. Awaiting manual action or override.' 
+                      : 'No restricted items detected. Belt operating normally. Proceeding to next cargo...'}
                 </p>
               </div>
             </div>
             
-            {threatDetected && (
-              <div className="mt-4 pt-4 border-t border-red-900/50 grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-red-950/50 p-2 rounded border border-red-900/50">
-                  <span className="text-slate-400 block mb-1">Density Level</span>
-                  <span className="text-red-300 font-mono font-bold">HIGH (Metallic)</span>
-                </div>
-                <div className="bg-red-950/50 p-2 rounded border border-red-900/50">
-                  <span className="text-slate-400 block mb-1">Atomic Z Range</span>
-                  <span className="text-red-300 font-mono font-bold">25 - 29</span>
-                </div>
+            {scanStage === 'result' && currentItem.hasThreat && (
+              <div className="mt-4 pt-4 border-t border-red-900/50 flex flex-col gap-2">
+                <button 
+                  onClick={handleNextItem}
+                  className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-lg"
+                >
+                  <Play className="w-4 h-4 fill-current" />
+                  Override & Scan Next Cargo
+                </button>
               </div>
             )}
           </div>
@@ -171,11 +258,9 @@ const CargoDashboard = () => {
         </div>
       </div>
 
-      {/* ป๊อปอัป Review (Modal) */}
       {selectedAlert && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-[fadeIn_0.2s_ease-out]">
-            
             <div className="bg-slate-800 p-4 border-b border-slate-700 flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-400" />
